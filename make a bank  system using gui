@@ -1,0 +1,92 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class Bank:
+    def _init_(self, name):
+        self.name = name
+        self.accounts = []
+
+    def create_account(self, account_number, account_holder, initial_balance):
+        account = Account(account_number, account_holder, initial_balance)
+        self.accounts.append(account)
+
+    def deposit(self, account_number, amount):
+        account = self.find_account(account_number)
+        if account:
+            account.deposit(amount)
+        else:
+            messagebox.showerror("Error", "Account not found.")
+
+    def withdraw(self, account_number, amount):
+        account = self.find_account(account_number)
+        if account:
+            account.withdraw(amount)
+        else:
+            messagebox.showerror("Error", "Account not found.")
+
+    def find_account(self, account_number):
+        for account in self.accounts:
+            if account.account_number == account_number:
+                return account
+        return None
+
+
+class Account:
+    def _init_(self, account_number, account_holder, initial_balance):
+        self.account_number = account_number
+        self.account_holder = account_holder
+        self.balance = initial_balance
+
+    def deposit(self, amount):
+        if amount > 0:
+            self.balance += amount
+            messagebox.showinfo("Deposit", f"Deposit successful. New balance: {self.balance}")
+        else:
+            messagebox.showerror("Error", "Invalid deposit amount.")
+
+    def withdraw(self, amount):
+        if amount > 0:
+            if self.balance >= amount:
+                self.balance -= amount
+                messagebox.showinfo("Withdrawal", f"Withdrawal successful. New balance: {self.balance}")
+            else:
+                messagebox.showerror("Error", "Insufficient funds.")
+        else:
+            messagebox.showerror("Error", "Invalid withdrawal amount.")
+
+# Create the GUI using Tkinter
+class BankingSystemGUI:
+    def _init_(self, bank):
+        self.bank = bank
+        self.window = tk.Tk()
+        self.window.title("Banking System")
+
+        # Account Number Label and Entry
+        self.account_number_label = tk.Label(self.window, text="Account Number:")
+        self.account_number_label.pack()
+        self.account_number_entry = tk.Entry(self.window)
+        self.account_number_entry.pack()
+
+        # Amount Label and Entry
+        self.amount_label = tk.Label(self.window, text="Amount:")
+        self.amount_label.pack()
+        self.amount_entry = tk.Entry(self.window)
+        self.amount_entry.pack()
+
+        # Deposit Button
+        self.deposit_button = tk.Button(self.window, text="Deposit", command=self.deposit)
+        self.deposit_button.pack()
+
+        # Withdraw Button
+        self.withdraw_button = tk.Button(self.window, text="Withdraw", command=self.withdraw)
+        self.withdraw_button.pack()
+
+    def deposit(self):
+        account_number = self.account_number_entry.get()
+        amount = float(self.amount_entry.get())
+        self.bank.deposit(account_number, amount)
+
+    def withdraw(self):
+        account_number = self.account_number_entry.get()
+        amount = float(self.amount_entry.get())
+        self.bank.withdraw(account_number, amount)
